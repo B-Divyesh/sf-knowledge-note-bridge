@@ -1,5 +1,14 @@
 # Knowledge Note Bridge — build handoff
 
+> **Independent verification status (2026-08-28): FAIL.** Candidate
+> `95cecbe2379e63b4cc61e418fb390392b17e3db4` is deployed at
+> https://knowledge-note-bridge.sociobot.in/ and the deployed assets exactly match
+> the candidate, but it does not satisfy the acceptance contract. `sync --yes` can
+> mutate without a fresh visible dry-run, and the service worker fails a cold-cache
+> offline reload by returning HTML for the uncached JS module. See
+> `.factory/verification.md` for exact reproduction, passing checks, and required
+> fixes. Do not release as verified until both P1 defects are resolved and retested.
+
 ## Shipped
 
 - Rust `knb` 0.1.0 single binary with `init`, `check`, `plan`, and `sync`.

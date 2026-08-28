@@ -20,7 +20,7 @@ const cacheVersion = createHash('sha256').update(JSON.stringify(shell)).digest('
 const template = await readFile('site/public/sw.js', 'utf8');
 const worker = template
   .replace('__KBN_CACHE_VERSION__', cacheVersion)
-  .replace('__KBN_PRECACHE__', JSON.stringify(shell));
+  .replace(/const SHELL = .+;/, `const SHELL = ${JSON.stringify(shell)};`);
 
 if (worker.includes('__KBN_')) throw new Error('service worker template placeholders were not replaced');
 await writeFile(resolve(output, 'sw.js'), worker);

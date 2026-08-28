@@ -1,5 +1,5 @@
 const CACHE = 'knb-shell-__KBN_CACHE_VERSION__';
-const SHELL = __KBN_PRECACHE__;
+const SHELL = ['/', '/privacy/', '/terms/', '/bridge-ceramic.webp', '/favicon.svg'];
 
 self.addEventListener('install', (event) => event.waitUntil(
   caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting())

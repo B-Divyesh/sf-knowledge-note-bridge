@@ -1,94 +1,85 @@
-# Knowledge Note Bridge — build handoff
+# Knowledge Note Bridge — repair handoff
 
-> **Independent verification status (2026-08-28): FAIL.** Candidate
-> `95cecbe2379e63b4cc61e418fb390392b17e3db4` is deployed at
-> https://knowledge-note-bridge.sociobot.in/ and the deployed assets exactly match
-> the candidate, but it does not satisfy the acceptance contract. `sync --yes` can
-> mutate without a fresh visible dry-run, and the service worker fails a cold-cache
-> offline reload by returning HTML for the uncached JS module. See
-> `.factory/verification.md` for exact reproduction, passing checks, and required
-> fixes. Do not release as verified until both P1 defects are resolved and retested.
+## Release status
 
-## Shipped
+**Repaired and deployed on 2026-08-28.** The independent-verifier P1 findings for
+candidate `95cecbe2379e63b4cc61e418fb390392b17e3db4` are fixed in repair commit
+`a731c59` (pushed to `main`) and deployed to
+https://knowledge-note-bridge.sociobot.in/ (Azure deployment
+`9cca5a9a-4874-41c0-a9af-46c8357b8e07`). The deployed JS and service-worker
+SHA-256 values exactly match the local `dist/site` output.
 
-- Rust `knb` 0.1.0 single binary with `init`, `check`, `plan`, and `sync`.
-- Recursive Markdown card discovery, strict stable-ID validation, CommonMark-to-Anki
-  field rendering, and duplicate detection.
-- Pure reconciliation planner for unchanged, add, in-place update, explicit rename,
-  explicit archive, and blocked/missing-source states.
-- Stock AnkiConnect v6 adapter. Before its first mutation, `sync` calls documented
-  `deckNames` and `exportPackage(includeSched: true)` for every deck, writing scheduled
-  `.apkg` files beneath `.knb/backups/<unix-time>/`.
-- No deletion path: archive adds `knb_archived` and suspends cards. Reactivation removes
-  that tag and unsuspends them. Updates and renames retain the Anki note/card IDs.
-- Incremental reversal report with the complete pre-change fields, tags, deck, note ID,
-  card IDs, backup paths, applied actions, and failure state; local sync manifest.
-- Human and single-value JSON output, stable exit codes, no interactive prompts.
-- Responsive static documentation and local browser diff lab at `dist/site`, with
-  explicit empty, parse-error, blocked, and offline states.
-- $19 one-time Steward license flow using the Sociobot checkout/verify contract,
-  once-daily cached verification, optimistic offline access, query-token capture, and
-  paste-to-restore. Core CLI safety and export remain free.
-- Original 58 KB WebP ceramic bridge hero, privacy and terms pages, offline shell service
-  worker, CSP/caching config, sitemap, and robots file.
+## Repairs
 
-## Verify and package
+- **Approved write plan:** a writing `knb sync` now requires both `--yes` and
+  `--plan FILE`. `FILE` must be unmodified JSON from `knb plan --json`; the
+  command independently rebuilds the current plan and refuses with exit code 3
+  before backup or mutation if it is absent or stale. The reversal report records
+  the approved plan path. README, `--help`, and landing-page commands now show:
 
-From a clean clone with stable Rust and Node.js 20+:
+  ```sh
+  knb plan notes/ --json > plan.json
+  knb sync notes/ --yes --plan plan.json
+  ```
 
-```sh
-npm install
-npm test
-npm run build
-cargo package --allow-dirty
-```
+- **Offline shell:** the site build now generates a versioned service worker from
+  the actual Vite asset list. It precaches HTML routes, image, favicon, and the
+  hashed JS/CSS, caches static resources first, uses the HTML fallback only for
+  navigation requests, and ignores response `Vary` only when looking up this
+  same-origin static cache. `skipWaiting`, `clients.claim`, and revalidated
+  `/sw.js` caching provide immediate updates. Failed asset requests never receive
+  the HTML document.
+- Added `/test-results/` to `.gitignore`, so the package no longer picks up
+  Playwright artifacts after test runs.
 
-Verification completed on 2026-08-28:
+## Verification performed
 
-- `npm test`: 12 Rust tests (including a mock-Anki end-to-end backup-before-write sync),
-  4 browser-diff unit tests, and 4 Playwright/Axe tests passed at desktop and 390 px.
-- `npm run build`: passed; `dist/site/index.html` exists and the release CLI is at
+From a clean `npm ci` install:
+
+- `npm test` passed: 13 Rust unit/integration tests, 4 browser-diff unit tests,
+  and 8 Playwright/Axe tests. Browser tests cover desktop Chromium and 390 px
+  mobile, keyboard-visible normal interaction, semantic/accessibility checks,
+  error/empty/offline states, a cold offline reload with cached JavaScript and
+  CSS, and immediate service-worker cache activation after an update.
+- The new CLI integration regression proves `sync --yes` without `--plan`, and
+  a stale approved plan, make only `version`/`findNotes` reads—never
+  `deckNames`, `exportPackage`, or `addNote`. The matching-plan test proves
+  backup still precedes the first write.
+- `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, and
+  `npm run build` passed. `dist/site` is present and the release binary is
   `target/release/knb`.
-- `cargo package --allow-dirty`: passed; package is 106.4 KB compressed. Do not publish
-  from the worker; the factory owns registry credentials.
-- Factory `verify-url.sh`: HTTP 200, no console errors, title and `lang` present, exactly
-  one `h1`, main landmark present, no missing alt text or unlabeled buttons.
-- Lighthouse 12.8.2 mobile lab: Performance 100, Accessibility 100, Best Practices 100,
-  SEO 100; LCP 1.37 s, CLS 0, total blocking time 0 ms. Lab INP is not available without
-  user interaction; TBT is the lab responsiveness proxy.
-- Initial payload: 7.22 KB JavaScript, 9.80 KB CSS, no font files, 58.0 KB hero WebP.
-  All are far below the 200/50/120/300 KB budgets.
-- `npm audit --omit=dev`: 0 vulnerabilities.
+- `cargo package --allow-dirty` passed and verified a ready-to-publish
+  `target/package/knowledge-note-bridge-0.1.0.crate` (132.5 KiB compressed).
+  Do not publish from this worker. A fresh `cargo install --path . --root
+  <temp>` consumer successfully ran `knb --help`, `init`, and `check --json`.
+- `npm audit --omit=dev` reports 0 vulnerabilities. The final static payload is
+  7,218 B JS, 9,799 B CSS, no font files, 58,002 B hero WebP, and 1,542 B service
+  worker—below the product budgets.
+- Post-deploy `/opt/fleet/lib/verify-url.sh` passed: HTTPS 200, 767 ms load,
+  no console errors, title/lang, exactly one `h1`, main landmark, image alt, and
+  labelled buttons. The live response has HSTS, self-restricted CSP, `nosniff`,
+  strict referrer policy, and disabled camera/microphone/geolocation. `/sw.js`
+  has `Cache-Control: public, max-age=0, must-revalidate`; assets retain immutable
+  caching. No analytics, font CDN, or third-party runtime script is shipped.
+- SHA-256 identity evidence: `main-DrYr9GZn.js`
+  `09abaefaf9038662e24e3b9e518aed667862e4a24d1c8b7913d92c94ba26a158` and
+  `sw.js` `dc374bdd8e94733bba3f0d143014c1bc3b94142cd1736ff69e138f55ef9f2612`
+  are identical locally and at the production URL.
 
-## Deployment and release
+Lighthouse 12.8.2 was attempted against production with the installed Playwright
+Chromium, but its tab crashed in this container; no score is claimed. The file
+budgets and desktop/mobile Playwright/Axe evidence above are the available local
+performance and accessibility evidence.
+
+## Deploy and package
 
 - Static deploy root: `dist/site`.
-- Exact site build command: `npm run build:site` (full product build: `npm run build`).
-- The factory should attach platform binaries built from the `0.1.0` tag or publish the
-  verified Cargo package, then register the paid product for slug
-  `knowledge-note-bridge`. No product ID or payment-provider secret is in the repo.
-- Production checkout and verification intentionally target
-  `https://api.sociobot.in/api/v1/products/knowledge-note-bridge/...`.
+- Rebuild/deploy: `npm run build && /opt/fleet/lib/deploy-static.sh knowledge-note-bridge dist/site`.
+- Package for the factory release pipeline: `cargo package --allow-dirty`.
 
-## Known gaps and v1 boundaries
+## Remaining boundary
 
-- A live personal Anki collection was not available in the disposable worker. The full
-  request sequence and backup-before-mutation ordering are integration-tested against a
-  local HTTP double; release QA should run one sacrificial collection smoke test with
-  stock AnkiConnect v6 on each supported desktop platform.
-- New notes use Anki's built-in `Basic` model and its `Front`/`Back` fields. Custom note
-  types, cloze cards, media import, and automatic card generation are deliberately out
-  of v1 scope.
-- AnkiConnect exports backups per deck because its documented API does not expose a
-  whole-collection backup action. Every current deck is exported with scheduling data
-  before writes; the report lists each package for restoration.
-- The browser demo models reconciliation locally; it does not connect to Anki or upload
-  notes. This is intentional for privacy and because browsers cannot safely reach every
-  user's local AnkiConnect configuration.
-
-## Asset provenance
-
-The exact hero prompt, visual rationale, palette, type, motion policy, generator, and
-license are recorded in `.factory/design.md`. It was generated once with
-`/opt/fleet/lib/gen-image.sh` on the factory `factory-image` deployment and locally
-converted to WebP; no third-party stock assets are used.
+No personal Anki collection is available in this disposable environment. The
+AnkiConnect v6 request order, approved-plan protection, and backup-before-write
+sequence are exercised against a local HTTP double; a sacrificial real-collection
+smoke test remains advisable before a platform-release announcement.

@@ -1,0 +1,315 @@
+{
+  "communities": {
+    "0": [
+      "site_src_demo_core",
+      "site_src_demo_core_builddemoplan",
+      "site_src_demo_core_existing",
+      "site_src_demo_core_parsecards",
+      "site_src_demo_core_test",
+      "site_src_demo_core_test_active",
+      "site_src_main",
+      "site_src_main_byid",
+      "site_src_main_cachedvalid",
+      "site_src_main_connectivity",
+      "site_src_main_copybutton",
+      "site_src_main_demoinput",
+      "site_src_main_escapehtml",
+      "site_src_main_licenseform",
+      "site_src_main_live",
+      "site_src_main_offline",
+      "site_src_main_params",
+      "site_src_main_renderdemo",
+      "site_src_main_result",
+      "site_src_main_returnedlicense",
+      "site_src_main_savedlicense",
+      "site_src_main_setlive",
+      "site_src_main_updatelicenseui",
+      "site_src_main_verifylicense"
+    ],
+    "1": [
+      "axe_core_playwright",
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_axe_core_playwright",
+      "package_devdependencies_playwright_test",
+      "package_devdependencies_types_node",
+      "package_devdependencies_vite",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_build_site",
+      "package_scripts_dev",
+      "package_scripts_preview",
+      "package_scripts_test",
+      "package_scripts_test_e2e",
+      "package_scripts_test_site",
+      "package_type",
+      "package_version",
+      "playwright_test",
+      "types_node",
+      "vite"
+    ],
+    "2": [
+      "src_main_ankiclient",
+      "src_main_ankiclient_apply",
+      "src_main_ankiclient_call",
+      "src_main_ankiclient_create_backups",
+      "src_main_ankiclient_existing_notes",
+      "src_main_ankiclient_update_note",
+      "src_main_apperror",
+      "src_main_apperror_anki",
+      "src_main_checkresult",
+      "src_main_desired_tags",
+      "src_main_rs_option",
+      "src_main_rs_string",
+      "src_main_rs_vec",
+      "src_main_syncreport"
+    ],
+    "3": [
+      "src_lib",
+      "src_lib_build_plan",
+      "src_lib_existing",
+      "src_lib_existingnote",
+      "src_lib_explicit_archive_is_reversible_write",
+      "src_lib_explicit_rename_claims_old_note_and_preserves_note_id",
+      "src_lib_missing_source_is_blocked_not_deleted",
+      "src_lib_note_matches",
+      "src_lib_parse_markdown",
+      "src_lib_parses_documented_example_and_normalizes_tags",
+      "src_lib_plans_in_place_update_without_changing_identity",
+      "src_lib_rejects_unknown_metadata_and_empty_active_cards",
+      "src_lib_renders_commonmark_for_anki_fields"
+    ],
+    "4": [
+      "arc",
+      "joinhandle",
+      "mutex",
+      "tcpstream",
+      "tests_cli",
+      "tests_cli_check_json_is_one_scriptable_value",
+      "tests_cli_mock_anki",
+      "tests_cli_read_request",
+      "tests_cli_rs_string",
+      "tests_cli_rs_value",
+      "tests_cli_rs_vec",
+      "tests_cli_sync_backs_up_before_first_write_and_records_report"
+    ],
+    "5": [
+      "exitcode",
+      "hashmap",
+      "src_main",
+      "src_main_cli",
+      "src_main_command",
+      "src_main_main",
+      "src_main_parse_existing",
+      "src_main_paths",
+      "src_main_report_contains_complete_before_state",
+      "src_main_rs_value",
+      "src_main_strips_only_bridge_tags_from_anki_note"
+    ],
+    "6": [
+      "self",
+      "src_main_ankiclient_new",
+      "src_main_apperror_after_output",
+      "src_main_apperror_blocked",
+      "src_main_check",
+      "src_main_load",
+      "src_main_report_path",
+      "src_main_rs_pathbuf",
+      "src_main_run",
+      "src_main_sync"
+    ],
+    "7": [
+      "intoiterator",
+      "item",
+      "src_lib_normalize_tags",
+      "src_lib_parse_block",
+      "src_lib_render_markdown",
+      "src_lib_rs_result",
+      "src_lib_rs_string",
+      "src_lib_stable_fingerprint",
+      "src_lib_validate_id"
+    ],
+    "8": [
+      "into",
+      "src_main_apperror_usage",
+      "src_main_init",
+      "src_main_rs_path",
+      "src_main_rs_result",
+      "src_main_write_manifest",
+      "src_main_write_report"
+    ],
+    "9": [
+      "src_lib_change",
+      "src_lib_change_id",
+      "src_lib_change_is_write",
+      "src_lib_rs_option",
+      "src_lib_sourcecard",
+      "src_main_change_kind"
+    ],
+    "10": [
+      "src_lib_collect_markdown",
+      "src_lib_parse_paths",
+      "src_lib_rejects_duplicate_ids_across_paths",
+      "src_lib_rs_path",
+      "src_lib_rs_pathbuf",
+      "src_lib_rs_vec"
+    ],
+    "11": [
+      "src_lib_plan",
+      "src_lib_plan_has_writes",
+      "src_lib_plan_is_blocked",
+      "src_lib_summary",
+      "src_main_print_plan"
+    ],
+    "12": [
+      "site_public_sw",
+      "site_public_sw_shell"
+    ],
+    "13": [
+      "pkg_knowledge_note_bridge"
+    ],
+    "14": [
+      "playwright_config"
+    ],
+    "15": [
+      "site_tests_site_spec"
+    ],
+    "16": [
+      "vite_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.12318840579710146,
+    "1": 0.09090909090909091,
+    "2": 0.37362637362637363,
+    "3": 0.3717948717948718,
+    "4": 0.19696969696969696,
+    "5": 0.2727272727272727,
+    "6": 0.4222222222222222,
+    "7": 0.3333333333333333,
+    "8": 0.42857142857142855,
+    "9": 0.4,
+    "10": 0.4666666666666667,
+    "11": 0.4,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_main_apperror",
+      "label": "AppError",
+      "degree": 20
+    },
+    {
+      "id": "src_main_sync",
+      "label": "sync()",
+      "degree": 18
+    },
+    {
+      "id": "src_main_run",
+      "label": "run()",
+      "degree": 15
+    },
+    {
+      "id": "src_lib_sourcecard",
+      "label": "SourceCard",
+      "degree": 14
+    },
+    {
+      "id": "src_lib_parse_markdown",
+      "label": "parse_markdown()",
+      "degree": 12
+    },
+    {
+      "id": "src_lib_build_plan",
+      "label": "build_plan()",
+      "degree": 11
+    },
+    {
+      "id": "src_main_load",
+      "label": "load()",
+      "degree": 11
+    },
+    {
+      "id": "src_lib_existingnote",
+      "label": "ExistingNote",
+      "degree": 10
+    },
+    {
+      "id": "src_lib_change",
+      "label": "Change",
+      "degree": 10
+    },
+    {
+      "id": "src_lib_parse_paths",
+      "label": "parse_paths()",
+      "degree": 10
+    }
+  ],
+  "surprises": [
+    {
+      "source": "load()",
+      "target": "parse_paths()",
+      "source_files": [
+        "src/main.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "run()",
+      "target": "build_plan()",
+      "source_files": [
+        "src/main.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "sync()",
+      "target": "build_plan()",
+      "source_files": [
+        "src/main.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "desired_tags()",
+      "target": "SourceCard",
+      "source_files": [
+        "src/main.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "load()",
+      "target": "SourceCard",
+      "source_files": [
+        "src/main.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

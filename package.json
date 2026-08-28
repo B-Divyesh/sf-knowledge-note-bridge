@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "test": "cargo test && node --test site/src/demo-core.test.js && npm run build:site && npm run test:e2e",
     "test:site": "node --test site/src/demo-core.test.js",
-    "build:site": "vite build",
+    "build:site": "vite build && node scripts/build-service-worker.mjs",
     "build": "cargo build --release && npm run build:site",
     "preview": "vite preview --host 127.0.0.1",
     "test:e2e": "playwright test"

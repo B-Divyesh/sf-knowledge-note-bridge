@@ -65,10 +65,29 @@ fn sync_backs_up_before_first_write_and_records_report() {
         "```card\nid: safe-id\ndeck: Default\n---\nQuestion?\n---\nAnswer.\n```\n",
     )
     .unwrap();
+    let (endpoint, calls, server) = mock_anki(2);
+    let plan_output = Command::new(env!("CARGO_BIN_EXE_knb"))
+        .current_dir(dir.path())
+        .args(["plan", "cards.md", "--json", "--endpoint", &endpoint])
+        .output()
+        .unwrap();
+    server.join().unwrap();
+    assert!(plan_output.status.success());
+    fs::write(dir.path().join("approved-plan.json"), &plan_output.stdout).unwrap();
+    assert_eq!(*calls.lock().unwrap(), ["version", "findNotes"]);
+
     let (endpoint, calls, server) = mock_anki(5);
     let output = Command::new(env!("CARGO_BIN_EXE_knb"))
         .current_dir(dir.path())
-        .args(["sync", "cards.md", "--yes", "--endpoint", &endpoint])
+        .args([
+            "sync",
+            "cards.md",
+            "--yes",
+            "--plan",
+            "approved-plan.json",
+            "--endpoint",
+            &endpoint,
+        ])
         .output()
         .unwrap();
     server.join().unwrap();
@@ -98,7 +117,65 @@ fn sync_backs_up_before_first_write_and_records_report() {
     )
     .unwrap();
     assert!(report.contains("001-Default.apkg"));
+    assert!(report.contains("approved-plan.json"));
     assert!(report.contains("\"status\": \"complete\""));
+}
+
+#[test]
+fn sync_rejects_missing_or_stale_approval_before_backup_or_write() {
+    let dir = tempfile::tempdir().unwrap();
+    let cards = dir.path().join("cards.md");
+    fs::write(
+        &cards,
+        "```card\nid: safe-id\ndeck: Default\n---\nQuestion?\n---\nAnswer.\n```\n",
+    )
+    .unwrap();
+
+    let (endpoint, calls, server) = mock_anki(2);
+    let unapproved = Command::new(env!("CARGO_BIN_EXE_knb"))
+        .current_dir(dir.path())
+        .args(["sync", "cards.md", "--yes", "--endpoint", &endpoint])
+        .output()
+        .unwrap();
+    server.join().unwrap();
+    assert_eq!(unapproved.status.code(), Some(3));
+    assert!(String::from_utf8_lossy(&unapproved.stderr).contains("requires --plan FILE"));
+    assert_eq!(*calls.lock().unwrap(), ["version", "findNotes"]);
+
+    let (endpoint, calls, server) = mock_anki(2);
+    let plan_output = Command::new(env!("CARGO_BIN_EXE_knb"))
+        .current_dir(dir.path())
+        .args(["plan", "cards.md", "--json", "--endpoint", &endpoint])
+        .output()
+        .unwrap();
+    server.join().unwrap();
+    assert!(plan_output.status.success());
+    assert_eq!(*calls.lock().unwrap(), ["version", "findNotes"]);
+    fs::write(dir.path().join("approved-plan.json"), &plan_output.stdout).unwrap();
+
+    fs::write(
+        &cards,
+        "```card\nid: safe-id\ndeck: Default\n---\nQuestion changed?\n---\nAnswer.\n```\n",
+    )
+    .unwrap();
+    let (endpoint, calls, server) = mock_anki(2);
+    let output = Command::new(env!("CARGO_BIN_EXE_knb"))
+        .current_dir(dir.path())
+        .args([
+            "sync",
+            "cards.md",
+            "--yes",
+            "--plan",
+            "approved-plan.json",
+            "--endpoint",
+            &endpoint,
+        ])
+        .output()
+        .unwrap();
+    server.join().unwrap();
+    assert_eq!(output.status.code(), Some(3));
+    assert!(String::from_utf8_lossy(&output.stderr).contains("no longer matches"));
+    assert_eq!(*calls.lock().unwrap(), ["version", "findNotes"]);
 }
 
 #[test]

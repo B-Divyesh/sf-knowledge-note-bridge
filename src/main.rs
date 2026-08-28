@@ -16,7 +16,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
     name = "knb",
     version,
     about = "Keep Anki review history attached to Markdown cards",
-    long_about = "Knowledge Note Bridge parses explicit Markdown card blocks, previews every change, backs up Anki, and updates notes in place so review history survives content edits and file moves.\n\nStart with `knb check notes/`, then inspect `knb plan notes/`. No command prompts; sync requires --yes."
+    long_about = "Knowledge Note Bridge parses explicit Markdown card blocks, previews every change, backs up Anki, and updates notes in place so review history survives content edits and file moves.\n\nStart with `knb check notes/`, then save and inspect `knb plan notes/ --json > plan.json`. No command prompts; a writing sync requires --yes and that exact plan file."
 )]
 struct Cli {
     #[arg(long, global = true, help = "Emit one JSON value to stdout")]
@@ -44,12 +44,18 @@ enum Command {
     Check(Paths),
     /// Compare source cards with Anki; never writes
     Plan(Paths),
-    /// Back up Anki, then apply the reviewed plan
+    /// Back up Anki, then apply an exact, reviewed dry-run plan
     Sync {
         #[command(flatten)]
         paths: Paths,
         #[arg(long, help = "Required confirmation for non-interactive writes")]
         yes: bool,
+        #[arg(
+            long,
+            value_name = "FILE",
+            help = "JSON output saved from `knb plan`; required with --yes when changes exist"
+        )]
+        plan: Option<PathBuf>,
     },
 }
 
@@ -114,6 +120,7 @@ struct SyncReport {
     backups: Vec<String>,
     status: String,
     applied: Vec<String>,
+    approved_plan: String,
     plan: Plan,
     error: Option<String>,
 }
@@ -154,7 +161,9 @@ fn run(cli: &Cli) -> Result<(), AppError> {
                 Ok(())
             }
         }
-        Command::Sync { paths, yes } => sync(&paths.paths, *yes, cli.json, &cli.endpoint),
+        Command::Sync { paths, yes, plan } => {
+            sync(&paths.paths, *yes, plan.as_deref(), cli.json, &cli.endpoint)
+        }
     }
 }
 
@@ -253,7 +262,35 @@ fn print_plan(plan: &Plan, as_json: bool) {
     println!("No changes were written.");
 }
 
-fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(), AppError> {
+fn read_approved_plan(path: &Path) -> Result<Plan, AppError> {
+    let bytes = fs::read(path).map_err(|error| {
+        AppError::usage(format!(
+            "could not read approved plan {}: {error}",
+            path.display()
+        ))
+    })?;
+    let plan: Plan = serde_json::from_slice(&bytes).map_err(|error| {
+        AppError::usage(format!(
+            "approved plan {} is not valid `knb plan --json` output: {error}",
+            path.display()
+        ))
+    })?;
+    if plan.schema != 1 || !plan.dry_run {
+        return Err(AppError::usage(format!(
+            "approved plan {} must be an unmodified dry-run from `knb plan --json`",
+            path.display()
+        )));
+    }
+    Ok(plan)
+}
+
+fn sync(
+    paths: &[PathBuf],
+    yes: bool,
+    approved_plan_path: Option<&Path>,
+    as_json: bool,
+    endpoint: &str,
+) -> Result<(), AppError> {
     let cards = load(paths)?;
     let client = AnkiClient::new(endpoint)?;
     let mut plan = build_plan(&cards, &client.existing_notes()?);
@@ -274,8 +311,24 @@ fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(
     if !yes {
         print_plan(&plan, as_json);
         return Err(AppError::blocked(
-            "review the plan, then rerun with --yes to back up and apply it",
+            "save and review `knb plan --json` output, then rerun with --yes --plan FILE to back up and apply that exact plan",
         )
+        .after_output());
+    }
+    let Some(approved_plan_path) = approved_plan_path else {
+        print_plan(&plan, as_json);
+        return Err(AppError::blocked(
+            "sync stopped before backup: --yes requires --plan FILE saved from the exact current `knb plan --json` output",
+        )
+        .after_output());
+    };
+    let approved_plan = read_approved_plan(approved_plan_path)?;
+    if approved_plan != plan {
+        print_plan(&plan, as_json);
+        return Err(AppError::blocked(format!(
+            "sync stopped before backup: {} no longer matches the current source and Anki state; save and review this newly printed plan before retrying",
+            approved_plan_path.display()
+        ))
         .after_output());
     }
     let now = SystemTime::now()
@@ -285,11 +338,12 @@ fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(
     let backups = client.create_backups(now)?;
     plan.dry_run = false;
     let mut report = SyncReport {
-        schema: 1,
+        schema: 2,
         created_at_unix: now,
         backups,
         status: "applying".into(),
         applied: Vec::new(),
+        approved_plan: approved_plan_path.display().to_string(),
         plan,
         error: None,
     };

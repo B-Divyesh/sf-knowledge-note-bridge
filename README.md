@@ -49,7 +49,7 @@ tables, strikethrough, and task lists; the CLI renders them to Anki-safe field H
 
 ## Usage
 
-First inspect what would happen:
+First save the dry-run that you inspect. It is the approval artifact for a write:
 
 ```sh
 knb plan notes/ --json > plan.json
@@ -59,14 +59,16 @@ Example summary:
 
 ```text
 2 unchanged · 1 update · 1 rename · 1 archive · 0 blocked
-No changes were written. Run `knb sync notes/ --yes` after reviewing this plan.
+No changes were written. Save this exact JSON plan before attempting a sync.
 ```
 
-Then apply the exact same reconciliation. `sync` exports every Anki deck to a scheduled
-`.apkg` backup through AnkiConnect before the first write and stores a local reversal report:
+Then apply the exact same reconciliation. `sync` refuses to write if source cards or
+Anki state have changed since that plan; it prints the new plan and exits before backup
+or mutation. A matching sync exports every Anki deck to a scheduled `.apkg` backup
+through AnkiConnect before the first write and stores a local reversal report:
 
 ```sh
-knb sync notes/ --yes
+knb sync notes/ --yes --plan plan.json
 # report: .knb/reports/20260828T154012Z.json
 ```
 
@@ -76,13 +78,14 @@ Other useful commands:
 knb check notes/                 # parse and validate without Anki
 knb init notes/cards.md          # create a documented starter note
 knb plan notes/ --endpoint URL   # use a non-default AnkiConnect endpoint
-knb sync notes/ --yes --json     # non-interactive scripting output
+knb sync notes/ --yes --plan plan.json --json # non-interactive scripting output
 ```
 
-The CLI never prompts. `sync` requires `--yes`; without it, it prints the plan and exits
-with code 3. Parse/configuration errors use exit code 2, blocked safety conditions 3,
-and Anki/network failures 4. `--json` writes one JSON value to stdout; human diagnostics
-go to stderr.
+The CLI never prompts. A sync with changes requires both `--yes` and `--plan FILE`; the
+file must be unmodified JSON from a current `knb plan --json`. Missing or stale approval
+prints the current plan and exits with code 3 before a backup or write. Parse/configuration
+errors use exit code 2, blocked safety conditions 3, and Anki/network failures 4. `--json`
+writes one JSON value to stdout; human diagnostics go to stderr.
 
 ## How identity and history are preserved
 
@@ -109,15 +112,15 @@ verification are handled by Sociobot; no payment details enter this repository.
 Requirements: stable Rust, Node.js 20+, npm, and Chromium for browser tests.
 
 ```sh
-npm install
+npm ci
 npm test                 # Rust tests + site tests
 npm run build            # release binary + site -> dist/
 npm run build:site       # static site only -> dist/site/
 cargo package --allow-dirty
 ```
 
-The package starts at `0.1.0`. CI can use `knb sync --yes`; there are no interactive
-prompts. The static site is deployed from `dist/site` and documents the downloadable
+The package starts at `0.1.0`. CI can use `knb sync --yes --plan plan.json`; there are no
+interactive prompts. The static site is deployed from `dist/site` and documents the downloadable
 binary supplied by the factory release pipeline.
 
 ## Privacy and security

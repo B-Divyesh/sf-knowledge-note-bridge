@@ -82,7 +82,7 @@ textarea { resize: vertical; min-height: 430px; width: 100%; border: 0; border-r
 .offline { background: #fff4de; border: 1px solid #c69646; color: #5f3c08; padding: 12px 18px; text-align: center; }
 .offline[hidden] { display: none; }
 .code-strip { display: flex; max-width: 640px; align-items: center; gap: 16px; background: var(--slate); color: #eff7f6; padding: 12px 12px 12px 20px; border-radius: 15px 15px 19px 16px; }
-.code-strip code { flex: 1; overflow-x: auto; white-space: nowrap; }
+.code-strip code { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .code-strip button { border-color: #8bb7bd; color: #fff; background: #214d55; }
 .integrity { display: grid; grid-template-columns: .9fr 1.1fr; gap: 80px; align-items: center; }
 .strata { border-left: 2px solid var(--cobalt); padding-left: 22px; }

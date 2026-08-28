@@ -236,18 +236,18 @@
       "degree": 11
     },
     {
+      "id": "src_lib_parse_paths",
+      "label": "parse_paths()",
+      "degree": 10
+    },
+    {
       "id": "src_lib_existingnote",
       "label": "ExistingNote",
       "degree": 10
     },
     {
-      "id": "src_lib_change",
-      "label": "Change",
-      "degree": 10
-    },
-    {
-      "id": "src_lib_parse_paths",
-      "label": "parse_paths()",
+      "id": "src_main_parse_existing",
+      "label": "parse_existing()",
       "degree": 10
     }
   ],
@@ -286,8 +286,8 @@
       "why": "inferred connection - not explicitly stated in source; bridges separate communities"
     },
     {
-      "source": "desired_tags()",
-      "target": "SourceCard",
+      "source": "SyncReport",
+      "target": "Plan",
       "source_files": [
         "src/main.rs",
         "src/lib.rs"
@@ -297,7 +297,7 @@
       "why": "bridges separate communities"
     },
     {
-      "source": "load()",
+      "source": "desired_tags()",
       "target": "SourceCard",
       "source_files": [
         "src/main.rs",

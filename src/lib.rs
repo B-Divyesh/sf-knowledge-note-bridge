@@ -285,13 +285,15 @@ fn parse_block(lines: &[&str], source: &str, line: usize) -> Result<SourceCard, 
             return Err(format!("{source}:{line}: renamed-from must differ from id"));
         }
     }
-    let front = lines[first + 1..second].join("\n").trim().to_owned();
-    let back = lines[second + 1..].join("\n").trim().to_owned();
-    if !archived && (front.is_empty() || back.is_empty()) {
+    let front_markdown = lines[first + 1..second].join("\n").trim().to_owned();
+    let back_markdown = lines[second + 1..].join("\n").trim().to_owned();
+    if !archived && (front_markdown.is_empty() || back_markdown.is_empty()) {
         return Err(format!(
             "{source}:{line}: active card needs a non-empty question and answer"
         ));
     }
+    let front = render_markdown(&front_markdown);
+    let back = render_markdown(&back_markdown);
     let fingerprint = stable_fingerprint(&deck, &tags, &front, &back);
     Ok(SourceCard {
         id,
@@ -305,6 +307,16 @@ fn parse_block(lines: &[&str], source: &str, line: usize) -> Result<SourceCard, 
         line,
         fingerprint,
     })
+}
+
+fn render_markdown(markdown: &str) -> String {
+    let options = pulldown_cmark::Options::ENABLE_TABLES
+        | pulldown_cmark::Options::ENABLE_STRIKETHROUGH
+        | pulldown_cmark::Options::ENABLE_TASKLISTS;
+    let parser = pulldown_cmark::Parser::new_ext(markdown, options);
+    let mut html = String::new();
+    pulldown_cmark::html::push_html(&mut html, parser);
+    html.trim_end().to_owned()
 }
 
 fn validate_id(id: &str) -> Result<(), &'static str> {
@@ -521,8 +533,8 @@ Sequence numbers and readiness.
             id: id.into(),
             deck: "Systems".into(),
             tags: vec!["networking".into(), "transport".into()],
-            front: "What does TCP establish?".into(),
-            back: "Sequence numbers and readiness.".into(),
+            front: "<p>What does TCP establish?</p>".into(),
+            back: "<p>Sequence numbers and readiness.</p>".into(),
             archived: false,
         }
     }
@@ -566,5 +578,15 @@ Sequence numbers and readiness.
         let plan = build_plan(&source, &[existing("tcp-handshake")]);
         assert_eq!(plan.summary.archive, 1);
         assert!(plan.has_writes());
+    }
+
+    #[test]
+    fn renders_commonmark_for_anki_fields() {
+        let cards = parse_markdown(
+            &EXAMPLE.replace("Sequence numbers", "**Sequence numbers**"),
+            "notes.md",
+        )
+        .unwrap();
+        assert!(cards[0].back.contains("<strong>Sequence numbers</strong>"));
     }
 }

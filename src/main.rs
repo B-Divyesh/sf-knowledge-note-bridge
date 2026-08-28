@@ -67,25 +67,34 @@ struct Paths {
 struct AppError {
     code: u8,
     message: String,
+    output_emitted: bool,
 }
 impl AppError {
     fn usage(message: impl Into<String>) -> Self {
         Self {
             code: 2,
             message: message.into(),
+            output_emitted: false,
         }
     }
     fn blocked(message: impl Into<String>) -> Self {
         Self {
             code: 3,
             message: message.into(),
+            output_emitted: false,
         }
     }
     fn anki(message: impl Into<String>) -> Self {
         Self {
             code: 4,
             message: message.into(),
+            output_emitted: false,
         }
+    }
+
+    fn after_output(mut self) -> Self {
+        self.output_emitted = true;
+        self
     }
 }
 
@@ -102,7 +111,7 @@ struct CheckResult {
 struct SyncReport {
     schema: u8,
     created_at_unix: u64,
-    backup: String,
+    backups: Vec<String>,
     status: String,
     applied: Vec<String>,
     plan: Plan,
@@ -114,12 +123,12 @@ fn main() -> ExitCode {
     match run(&cli) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            if cli.json {
+            if cli.json && !error.output_emitted {
                 println!(
                     "{}",
                     json!({"ok": false, "error": error.message, "exit_code": error.code})
                 );
-            } else {
+            } else if !cli.json {
                 eprintln!("error: {}", error.message);
             }
             ExitCode::from(error.code)
@@ -139,7 +148,8 @@ fn run(cli: &Cli) -> Result<(), AppError> {
             if plan.is_blocked() {
                 Err(AppError::blocked(
                     "plan is blocked; resolve each needs-action item before syncing",
-                ))
+                )
+                .after_output())
             } else {
                 Ok(())
             }
@@ -251,7 +261,8 @@ fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(
         print_plan(&plan, as_json);
         return Err(AppError::blocked(
             "sync stopped before backup: resolve every needs-action item",
-        ));
+        )
+        .after_output());
     }
     if !plan.has_writes() {
         print_plan(&plan, as_json);
@@ -264,18 +275,19 @@ fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(
         print_plan(&plan, as_json);
         return Err(AppError::blocked(
             "review the plan, then rerun with --yes to back up and apply it",
-        ));
+        )
+        .after_output());
     }
-    let backup = client.create_backup()?;
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs();
+    let backups = client.create_backups(now)?;
     plan.dry_run = false;
     let mut report = SyncReport {
         schema: 1,
         created_at_unix: now,
-        backup,
+        backups,
         status: "applying".into(),
         applied: Vec::new(),
         plan,
@@ -292,10 +304,9 @@ fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(
             report.error = Some(error.message.clone());
             write_report(&report_path, &report)?;
             return Err(AppError::anki(format!(
-                "sync stopped after {} change(s): {}. Restore backup `{}`; report: {}",
+                "sync stopped after {} change(s): {}. Restore the .apkg backups listed in {}; report retained",
                 report.applied.len(),
                 error.message,
-                report.backup,
                 report_path.display()
             )));
         }
@@ -310,7 +321,7 @@ fn sync(paths: &[PathBuf], yes: bool, as_json: bool, endpoint: &str) -> Result<(
     if as_json {
         println!("{}", serde_json::to_string_pretty(&report).unwrap());
     } else {
-        println!("Applied {} change(s). Review history stayed on existing note IDs.\nBackup: {}\nReversal report: {}", report.applied.len(), report.backup, report_path.display());
+        println!("Applied {} change(s). Review history stayed on existing note IDs.\nBackups: {} deck package(s)\nReversal report: {}", report.applied.len(), report.backups.len(), report_path.display());
     }
     Ok(())
 }
@@ -443,12 +454,40 @@ impl AnkiClient {
             .collect()
     }
 
-    fn create_backup(&self) -> Result<String, AppError> {
-        let result = self.call("createBackup", json!({"force": true}))?;
-        Ok(result
-            .as_str()
-            .unwrap_or("Anki automatic backup")
-            .to_owned())
+    fn create_backups(&self, now: u64) -> Result<Vec<String>, AppError> {
+        let decks = self
+            .call("deckNames", json!({}))?
+            .as_array()
+            .cloned()
+            .unwrap_or_default();
+        let directory = std::env::current_dir()
+            .map_err(|error| {
+                AppError::usage(format!("could not resolve backup directory: {error}"))
+            })?
+            .join(format!(".knb/backups/{now}"));
+        fs::create_dir_all(&directory).map_err(|error| {
+            AppError::usage(format!("could not create {}: {error}", directory.display()))
+        })?;
+        let mut paths = Vec::new();
+        for (index, deck) in decks.iter().filter_map(Value::as_str).enumerate() {
+            let safe_name: String = deck
+                .chars()
+                .map(|character| {
+                    if character.is_ascii_alphanumeric() || matches!(character, '-' | '_') {
+                        character
+                    } else {
+                        '-'
+                    }
+                })
+                .collect();
+            let path = directory.join(format!("{:03}-{}.apkg", index + 1, safe_name));
+            self.call(
+                "exportPackage",
+                json!({"deck": deck, "path": path, "includeSched": true}),
+            )?;
+            paths.push(path.display().to_string());
+        }
+        Ok(paths)
     }
 
     fn apply(&self, change: &Change) -> Result<(), AppError> {
@@ -484,6 +523,9 @@ impl AnkiClient {
         if let Some(old) = renamed_from {
             remove.push(format!("{ID_PREFIX}{old}"));
         }
+        if before.archived {
+            remove.push(ARCHIVED_TAG.into());
+        }
         if !remove.is_empty() {
             self.call(
                 "removeTags",
@@ -499,6 +541,9 @@ impl AnkiClient {
                 "changeDeck",
                 json!({"cards": before.card_ids, "deck": card.deck}),
             )?;
+        }
+        if before.archived && !before.card_ids.is_empty() {
+            self.call("unsuspend", json!({"cards": before.card_ids}))?;
         }
         Ok(())
     }

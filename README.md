@@ -44,6 +44,9 @@ incorrect old ID without losing history by adding `renamed-from: old-id` to the 
 card. Missing cards are never silently deleted: `plan` reports them as `needs-action`
 until the source explicitly archives or renames them.
 
+Question and answer bodies support CommonMark, including links, lists, code, emphasis,
+tables, strikethrough, and task lists; the CLI renders them to Anki-safe field HTML.
+
 ## Usage
 
 First inspect what would happen:
@@ -59,8 +62,8 @@ Example summary:
 No changes were written. Run `knb sync notes/ --yes` after reviewing this plan.
 ```
 
-Then apply the exact same reconciliation. `sync` creates an `.apkg` collection backup
-through AnkiConnect before the first write and stores a local reversal report:
+Then apply the exact same reconciliation. `sync` exports every Anki deck to a scheduled
+`.apkg` backup through AnkiConnect before the first write and stores a local reversal report:
 
 ```sh
 knb sync notes/ --yes
@@ -97,7 +100,7 @@ the backup path and the failure; restore the backup from Anki's import screen.
 
 The CLI and all integrity safeguards are MIT-licensed and fully usable for free.
 Knowledge Note Bridge Steward is a one-time purchase that unlocks convenience on the
-documentation site: saved browser demo reports and multi-root command presets. It does
+documentation site: saving browser demo reports for later reference. It does
 not gate sync safety, accessibility, or data export. The hosted checkout and license
 verification are handled by Sociobot; no payment details enter this repository.
 

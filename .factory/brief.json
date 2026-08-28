@@ -1,0 +1,10 @@
+{
+  "slug": "knowledge-note-bridge",
+  "title": "Knowledge Note Bridge",
+  "artifact_class": "cli",
+  "user": "Working self-learners who capture technical and business-domain knowledge in Markdown but need card updates without destroying existing review history.",
+  "smallest_useful_product": "A local Markdown-to-Anki bridge with stable card IDs, a dry-run diff, explicit archive/rename handling, and a reversible history-preservation report.",
+  "success_measure": "At least 90% of changed cards retain intended review history, with every destructive change previewed before sync.",
+  "constraints": "Back up collections before writes; use AnkiConnect; never transmit notes or decks by default.",
+  "monetization": "one-time"
+}

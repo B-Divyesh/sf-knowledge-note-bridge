@@ -1,0 +1,24 @@
+[package]
+name = "knowledge-note-bridge"
+version = "0.1.0"
+edition = "2021"
+description = "Preserve Anki review history while syncing cards from Markdown"
+license = "MIT"
+repository = "https://github.com/B-Divyesh/sf-knowledge-note-bridge"
+readme = "README.md"
+keywords = ["anki", "markdown", "flashcards", "cli"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "knb"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ureq = { version = "2.12", default-features = false }
+
+[dev-dependencies]
+tempfile = "3"
+

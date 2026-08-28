@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7f5" />
+    <meta name="description" content="Preview and safely sync Markdown cards to Anki without losing review history." />
+    <title>Knowledge Note Bridge — keep Anki history attached</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div id="offline-state" class="offline" role="status" hidden>You’re offline. The demo still works locally; checkout and license refresh will resume when connected.</div>
+    <header class="site-header shell">
+      <a class="brand" href="/" aria-label="Knowledge Note Bridge home"><span class="brand-mark" aria-hidden="true"></span><span>Knowledge Note Bridge</span></a>
+      <nav aria-label="Primary navigation">
+        <a href="#workflow">Workflow</a>
+        <a href="#demo">Live diff</a>
+        <a href="#steward">Steward</a>
+        <a class="button" href="#install">Install free</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Local integrity layer for Markdown + Anki</p>
+          <h1 id="hero-title">Change the note. Keep the history.</h1>
+          <p class="lede">Stable card IDs, a dry-run diff, backup-first sync, and explicit archive or rename handling—so an edit never quietly becomes a new learner.</p>
+          <div class="hero-actions">
+            <a class="button" href="#install">Install the CLI</a>
+            <a class="button secondary" href="#demo">Try the diff</a>
+          </div>
+          <ul class="trust-line" aria-label="Product guarantees">
+            <li>Notes stay local</li><li>No telemetry</li><li>Never deletes cards</li>
+          </ul>
+        </div>
+        <figure class="hero-visual">
+          <img src="/bridge-ceramic.webp" width="1440" height="960" fetchpriority="high" alt="Three porcelain tiles forming a bridge over a glacial fissure, joined by one unbroken cobalt line" />
+        </figure>
+      </section>
+
+      <section id="workflow" class="section shell" aria-labelledby="workflow-title">
+        <div class="section-head">
+          <div><p class="stamp">01 / A deliberate crossing</p><h2 id="workflow-title">Every write earns your consent.</h2></div>
+          <p>Knowledge Note Bridge treats scheduling data as irreplaceable. It separates inspection from mutation and turns ambiguity into a blocked plan—not a guess.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><h3>Stamp a stable ID</h3><p>Add a small <code>card</code> block to any Markdown file. Its ID follows the idea across wording, deck, and filename changes.</p></article>
+          <article class="step"><h3>Read the dry-run strata</h3><p>See exact adds, in-place updates, renames, archives, and safety blocks in human or JSON output before Anki changes.</p></article>
+          <article class="step"><h3>Back up, then bridge</h3><p><code>sync --yes</code> asks Anki to create a collection backup, applies the plan, and writes the full before-state report.</p></article>
+        </div>
+      </section>
+
+      <section id="demo" class="section demo-section" aria-labelledby="demo-title">
+        <div class="shell">
+          <div class="section-head">
+            <div><p class="stamp">02 / Local diff lab</p><h2 id="demo-title">Make a risky edit safely.</h2></div>
+            <p>This parser runs entirely in your browser. Change the answer, rename the ID with <code>renamed-from</code>, or set <code>archived: true</code>, then compare.</p>
+          </div>
+          <div class="demo-shell">
+            <div class="editor">
+              <label for="demo-source">Markdown source</label>
+              <textarea id="demo-source" spellcheck="false" data-example="```card&#10;id: tcp-handshake&#10;deck: Systems&#10;tags: networking transport&#10;---&#10;What does the TCP handshake establish?&#10;---&#10;Both peers’ initial sequence numbers and readiness.&#10;```&#10;&#10;```card&#10;id: lead-qualification&#10;renamed-from: legacy-lead-score&#10;deck: Work&#10;tags: domain sales&#10;---&#10;What qualifies a lead?&#10;---&#10;Agreed intent and fit thresholds.&#10;```">```card
+id: tcp-handshake
+deck: Systems
+tags: networking transport
+---
+What does the TCP handshake establish?
+---
+Both peers’ initial sequence numbers and readiness.
+```
+
+```card
+id: lead-qualification
+renamed-from: legacy-lead-score
+deck: Work
+tags: domain sales
+---
+What qualifies a lead?
+---
+Agreed intent and fit thresholds.
+```</textarea>
+              <div class="demo-actions"><button type="button" data-compare>Compare with Anki</button><button class="secondary" type="button" data-clear>Clear source</button></div>
+            </div>
+            <div class="result-pane">
+              <span class="result-label">Dry-run plan <span class="badge" id="license-badge">Free edition</span></span>
+              <div id="demo-result" aria-live="polite"></div>
+              <button class="secondary" id="save-report" type="button" disabled>Save demo report</button>
+            </div>
+          </div>
+          <p id="live-status" class="sr-only" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section id="install" class="section shell" aria-labelledby="install-title">
+        <div class="integrity">
+          <div><p class="stamp">03 / One quiet binary</p><h2 id="install-title">Install. Inspect. Sync.</h2><p class="lede">Rust, MIT-licensed, and scriptable. No daemon, cloud account, runtime analytics, or interactive prompt in CI.</p></div>
+          <div>
+            <div class="code-strip"><code>cargo install --git https://github.com/B-Divyesh/sf-knowledge-note-bridge</code><button id="copy-install" type="button">Copy</button></div>
+            <div class="strata" aria-label="Command sequence">
+              <div class="stratum"><b>validate</b><code>knb check notes/</code></div>
+              <div class="stratum"><b>preview</b><code>knb plan notes/ --json</code></div>
+              <div class="stratum"><b>apply</b><code>knb sync notes/ --yes</code></div>
+            </div>
+            <p><a href="https://github.com/B-Divyesh/sf-knowledge-note-bridge">Read the source and full format guide on GitHub</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell" aria-labelledby="integrity-title">
+        <div class="section-head">
+          <div><p class="stamp">04 / Safety boundaries</p><h2 id="integrity-title">It refuses to improvise.</h2></div>
+          <p>A card that disappears from Markdown is not “obviously deleted.” It is an unresolved integrity decision, so the sync stops before backup or writes.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><h3>Updates retain note IDs</h3><p>Front, back, deck, and tags change on the existing Anki note. Scheduling, ease, lapses, and the review log remain attached.</p></article>
+          <article class="step"><h3>Archives suspend</h3><p>An explicit archive suspends the existing cards and adds a visible tag. It never deletes; your backup and report remain the escape hatch.</p></article>
+          <article class="step"><h3>Failures leave evidence</h3><p>If an AnkiConnect write fails, the report records what already applied, every old value, and the backup to restore.</p></article>
+        </div>
+      </section>
+
+      <section id="steward" class="section shell" aria-labelledby="steward-title">
+        <div class="price-panel">
+          <div>
+            <p class="stamp">Steward edition</p><h2 id="steward-title">Convenience for many knowledge roots.</h2>
+            <div class="price">$19 <small>one-time purchase</small></div>
+            <p>The full CLI, backups, reports, JSON export, and every safety behavior remain free. Steward unlocks browser conveniences for repeat workflows.</p>
+            <ul class="features"><li>Save browser demo reports on this device</li><li>Keep a local reference while editing notes</li><li>All future Steward convenience updates</li></ul>
+            <div class="license-actions"><a class="button" href="https://api.sociobot.in/api/v1/products/knowledge-note-bridge/checkout">Buy Steward once</a></div>
+            <p><small>Sociobot/Dodo is the merchant of record. Refunds are handled there and revoke the license automatically. See <a href="/privacy/">privacy</a> and <a href="/terms/">terms</a>.</small></p>
+          </div>
+          <div class="license-box">
+            <h3>Restore a purchase</h3><p>Paste the license token from your receipt. It stays on this device and is checked at most once per day.</p>
+            <form id="license-form" novalidate><label for="license-input">License token</label><input id="license-input" name="license" autocomplete="off" aria-describedby="license-error license-notice" /><p id="license-error" class="form-error" role="alert"></p><button type="submit">Verify license</button></form>
+            <p id="license-notice" aria-live="polite">No license stored. The free CLI is ready to use.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-grid"><div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span>Knowledge Note Bridge</span></a><p>Built by Param Factory. Notes remain yours.</p></div><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-knowledge-note-bridge">Source</a></div></div>
+    </footer>
+  </body>
+</html>

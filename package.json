@@ -1,0 +1,21 @@
+{
+  "name": "knowledge-note-bridge-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "test": "cargo test && node --test site/src/demo-core.test.js && npm run build:site && npm run test:e2e",
+    "test:site": "node --test site/src/demo-core.test.js",
+    "build:site": "vite build",
+    "build": "cargo build --release && npm run build:site",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "@types/node": "22.10.2",
+    "vite": "6.4.3"
+  }
+}

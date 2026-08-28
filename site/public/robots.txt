@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://knowledge-note-bridge.sociobot.in/sitemap.xml

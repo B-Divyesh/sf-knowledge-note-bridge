@@ -3,8 +3,8 @@
 ## Release status
 
 **Repaired and deployed on 2026-08-28.** The independent-verifier P1 findings for
-candidate `95cecbe2379e63b4cc61e418fb390392b17e3db4` are fixed in repair commit
-`a731c59` (pushed to `main`) and deployed to
+candidate `95cecbe2379e63b4cc61e418fb390392b17e3db4` are fixed in repair commits
+`a731c59` and `4f77783` (pushed to `main`) and deployed to
 https://knowledge-note-bridge.sociobot.in/ (Azure deployment
 `9cca5a9a-4874-41c0-a9af-46c8357b8e07`). The deployed JS and service-worker
 SHA-256 values exactly match the local `dist/site` output.

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f7f5" />
+    <meta name="description" content="Try a sample Markdown-to-Anki dry-run without opening or changing Anki." />
+    <title>Demo — Knowledge Note Bridge</title>
+    <link rel="canonical" href="https://knowledge-note-bridge.sociobot.in/demo/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" /><meta property="og:url" content="https://knowledge-note-bridge.sociobot.in/demo/" /><meta property="og:title" content="Demo — Knowledge Note Bridge" /><meta property="og:description" content="Try a sample Markdown-to-Anki dry-run without opening or changing Anki." /><meta property="og:image" content="https://knowledge-note-bridge.sociobot.in/social-card.webp" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="Demo — Knowledge Note Bridge" /><meta name="twitter:description" content="Try a sample Markdown-to-Anki dry-run without opening or changing Anki." /><meta name="twitter:image" content="https://knowledge-note-bridge.sociobot.in/social-card.webp" />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body data-page="demo">
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div id="offline-state" class="offline" role="status" hidden>You are offline. This sample still works because it stays in your browser.</div>
+    <header class="site-header shell"><a class="brand" href="/" aria-label="Knowledge Note Bridge home"><span class="brand-mark" aria-hidden="true"></span><span>Knowledge Note Bridge</span></a><nav aria-label="Primary navigation"><a aria-current="page" href="/demo/">Demo</a><a href="/#workflow">How it works</a><a href="/privacy/">Privacy</a><a class="button compact" href="/#install">Install</a></nav></header>
+    <aside class="demo-banner" aria-label="Demo status"><div class="shell"><strong>Demo — sample data, nothing is saved</strong><div><button class="secondary" id="reset-demo" type="button">Reset demo</button><a class="button" id="start-real" href="/#install">Start for real</a></div></div></aside>
+    <main id="main" class="demo-main" tabindex="-1">
+      <section class="shell demo-intro" aria-labelledby="demo-page-title"><p class="eyebrow">Isolated browser sample</p><h1 id="demo-page-title" tabindex="-1">Preview Markdown changes before Anki sync</h1><p class="lede">Edit four sample cards and inspect the plan. This page cannot read or change your Anki collection.</p></section>
+      <section class="section demo-section" aria-labelledby="editor-title"><div class="shell"><div class="section-head"><div><p class="stamp">Editable sample</p><h2 id="editor-title">Compare sample notes with Anki</h2></div><p>The sample starts with an update, rename, archive, and new card. Reset restores all four.</p></div><div class="demo-shell">
+        <div class="editor"><label for="demo-source">Sample Markdown</label><textarea id="demo-source" spellcheck="false" aria-describedby="demo-help"></textarea><p id="demo-help" class="field-help">Changes remain in this tab's demo-only storage.</p><div class="demo-actions"><button type="button" data-compare>Compare sample</button><button class="secondary" type="button" data-clear>Clear sample</button></div></div>
+        <div class="result-pane"><span class="result-label">Dry-run plan <span class="badge">Sample only</span></span><div id="demo-result" aria-live="polite"></div></div>
+      </div><p id="live-status" class="sr-only" aria-live="polite"></p></div></section>
+    </main>
+    <footer class="site-footer"><div class="shell footer-grid"><div><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span>Knowledge Note Bridge</span></a><p>Update Anki cards from Markdown while keeping review history.</p><p>Built by Param Factory · v0.1.0 · repair-2</p></div><div class="footer-links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-knowledge-note-bridge">Source <span class="sr-only">(external)</span></a></div></div></footer>
+  </body>
+</html>

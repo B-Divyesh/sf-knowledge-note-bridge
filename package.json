@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "test": "cargo test && node --test site/src/demo-core.test.js && npm run build:site && npm run test:e2e",
+    "test": "cargo test && cargo build --release && node --test site/src/demo-core.test.js && node scripts/validate-claims.mjs && npm run build:site && npm run test:e2e",
+    "test:claims": "npm run build && playwright test --project=claims",
     "test:site": "node --test site/src/demo-core.test.js",
     "build:site": "vite build && node scripts/build-service-worker.mjs",
     "build": "cargo build --release && npm run build:site",
-    "preview": "vite preview --host 127.0.0.1",
+    "preview": "node scripts/serve-site.mjs",
     "test:e2e": "playwright test"
   },
   "devDependencies": {

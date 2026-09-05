@@ -9,11 +9,12 @@ export default defineConfig({
     trace: 'retain-on-failure'
   },
   projects: [
-    { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile-390', use: { ...devices['iPhone 13'], browserName: 'chromium', viewport: { width: 390, height: 844 } } }
+    { name: 'desktop-chromium', testIgnore: /claims\.spec\.js/, use: { ...devices['Desktop Chrome'] } },
+    { name: 'mobile-390', testIgnore: /claims\.spec\.js/, use: { ...devices['iPhone 13'], browserName: 'chromium', viewport: { width: 390, height: 844 } } },
+    { name: 'claims', testMatch: /claims\.spec\.js/, use: { ...devices['Desktop Chrome'] } }
   ],
   webServer: {
-    command: 'npm run preview',
+    command: 'node scripts/serve-site.mjs',
     port: 4173,
     reuseExistingServer: true
   }

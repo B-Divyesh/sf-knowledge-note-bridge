@@ -1,0 +1,32 @@
+[
+  {
+    "note_id": 17041,
+    "card_ids": [27041],
+    "id": "tcp-handshake",
+    "deck": "Systems",
+    "tags": ["networking", "transport"],
+    "front": "<p>What does the TCP handshake establish?</p>",
+    "back": "<p>Two peers agree to communicate.</p>",
+    "archived": false
+  },
+  {
+    "note_id": 17052,
+    "card_ids": [27052],
+    "id": "legacy-lead-score",
+    "deck": "Work",
+    "tags": ["domain", "sales"],
+    "front": "<p>What is a qualified lead?</p>",
+    "back": "<p>A lead meeting agreed intent and fit thresholds.</p>",
+    "archived": false
+  },
+  {
+    "note_id": 17063,
+    "card_ids": [27063],
+    "id": "obsolete-cache-rule",
+    "deck": "Systems",
+    "tags": [],
+    "front": "<p>Which cache rule did the old service use?</p>",
+    "back": "<p>The rule was retired with the service.</p>",
+    "archived": false
+  }
+]

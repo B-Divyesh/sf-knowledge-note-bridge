@@ -1,0 +1,142 @@
+[
+  {
+    "id": "cli-demo",
+    "claim": "knb demo runs bundled sample data in a new temporary directory without contacting Anki.",
+    "where": "landing sample section, README",
+    "test": "npm run test:claims -- --grep @claim:cli-demo",
+    "sandbox": "release binary, bundled examples, unique operating-system temporary directory"
+  },
+  {
+    "id": "demo-realistic",
+    "claim": "The browser sample opens with one realistic add, update, rename, and archive, and Reset demo restores them.",
+    "where": "landing first action, demo",
+    "test": "npm run test:claims -- --grep @claim:demo-realistic",
+    "sandbox": "fresh browser context at /demo/ with bundled sample data"
+  },
+  {
+    "id": "demo-isolation",
+    "claim": "Browser sample edits use only the demo namespace and are discarded when the user leaves the demo.",
+    "where": "demo banner, demo help, privacy",
+    "test": "npm run test:claims -- --grep @claim:demo-isolation",
+    "sandbox": "fresh browser context; inspect sessionStorage and localStorage before and after exit"
+  },
+  {
+    "id": "offline-demo",
+    "claim": "The browser sample works offline after one visit.",
+    "where": "landing facts, offline notice",
+    "test": "npm run test:claims -- --grep @claim:offline-demo",
+    "sandbox": "dedicated fresh browser context; visit /demo/, wait for its service worker, set offline, reload"
+  },
+  {
+    "id": "stable-id",
+    "claim": "Wording changes and explicit ID renames keep the existing Anki note identity.",
+    "where": "landing workflow, README",
+    "test": "npm run test:claims -- --grep @claim:stable-id",
+    "sandbox": "installed release binary using the bundled source and Anki snapshot"
+  },
+  {
+    "id": "dry-run-actions",
+    "claim": "The dry-run reports adds, updates, renames, archives, and blocked missing cards without writing to Anki.",
+    "where": "landing workflow, demo, README",
+    "test": "npm run test:claims -- --grep @claim:dry-run-actions",
+    "sandbox": "fresh /demo/ state with bundled and boundary source data"
+  },
+  {
+    "id": "approved-sync",
+    "claim": "A matching approved plan makes scheduled Anki backups before the first write and records a recovery report.",
+    "where": "landing workflow, README",
+    "test": "npm run test:claims -- --grep @claim:approved-sync",
+    "sandbox": "temporary project and local AnkiConnect v6 protocol double"
+  },
+  {
+    "id": "notes-local",
+    "claim": "The browser demo does not place pasted Markdown in any network request.",
+    "where": "landing facts, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:notes-local",
+    "sandbox": "fresh browser context with a unique marker and complete request log"
+  },
+  {
+    "id": "no-telemetry",
+    "claim": "Normal home and demo use makes no analytics or third-party runtime request.",
+    "where": "landing privacy section, privacy, README",
+    "test": "npm run test:claims -- --grep @claim:no-telemetry",
+    "sandbox": "fresh browser context; record every request during the home and demo flow"
+  },
+  {
+    "id": "archive-not-delete",
+    "claim": "An explicit archive tags and suspends existing cards instead of deleting them.",
+    "where": "landing privacy section, README",
+    "test": "npm run test:claims -- --grep @claim:archive-not-delete",
+    "sandbox": "temporary project and local AnkiConnect double with one existing card"
+  },
+  {
+    "id": "write-consent",
+    "claim": "A writing sync requires the exact reviewed plan and stops before backup or write without it.",
+    "where": "landing workflow, README",
+    "test": "npm run test:claims -- --grep @claim:write-consent",
+    "sandbox": "temporary project and local AnkiConnect double; run sync with --yes but no plan"
+  },
+  {
+    "id": "missing-source-block",
+    "claim": "A managed Anki card missing from the source blocks sync before backup or write.",
+    "where": "landing privacy section, README",
+    "test": "npm run test:claims -- --grep @claim:missing-source-block",
+    "sandbox": "temporary empty source and local AnkiConnect double with one managed note"
+  },
+  {
+    "id": "update-in-place",
+    "claim": "A changed card updates fields on the same Anki note without replacing its cards.",
+    "where": "landing workflow, README",
+    "test": "npm run test:claims -- --grep @claim:update-in-place",
+    "sandbox": "temporary changed source and local AnkiConnect double with a fixed note ID"
+  },
+  {
+    "id": "failure-recovery",
+    "claim": "A failed Anki write leaves a failed report with backup recovery paths.",
+    "where": "README",
+    "test": "npm run test:claims -- --grep @claim:failure-recovery",
+    "sandbox": "temporary project and local AnkiConnect double that rejects addNote"
+  },
+  {
+    "id": "free-core",
+    "claim": "The CLI workflow and every safety check run without a license.",
+    "where": "landing facts and pricing, terms, README",
+    "test": "npm run test:claims -- --grep @claim:free-core",
+    "sandbox": "release binary with a clean environment containing no license value"
+  },
+  {
+    "id": "json-cli",
+    "claim": "--json emits one machine-readable JSON value for success and errors.",
+    "where": "README",
+    "test": "npm run test:claims -- --grep @claim:json-cli",
+    "sandbox": "release binary in a temporary project with valid and invalid Markdown"
+  },
+  {
+    "id": "markdown-fields",
+    "claim": "Card fields support links, lists, code, emphasis, tables, and strikethrough.",
+    "where": "README",
+    "test": "npm run test:claims -- --grep @claim:markdown-fields",
+    "sandbox": "Rust parser test with one fixture containing every documented Markdown feature"
+  },
+  {
+    "id": "license-daily",
+    "claim": "A valid Steward license verdict is stored on the device and checked at most once per day.",
+    "where": "landing license form, privacy",
+    "test": "npm run test:claims -- --grep @claim:license-daily",
+    "sandbox": "fresh browser context with a recorded valid Sociobot response and two page loads"
+  },
+  {
+    "id": "license-revocation",
+    "claim": "Steward access is removed when Sociobot reports that a license is no longer valid.",
+    "where": "landing pricing, terms",
+    "test": "npm run test:claims -- --grep @claim:license-revocation",
+    "sandbox": "fresh browser context with a cached valid verdict followed by a recorded revoked response"
+  },
+  {
+    "id": "price-and-deliverable",
+    "claim": "Steward costs $19 once and saves the bundled browser sample report on the device.",
+    "where": "landing pricing, terms",
+    "test": "npm run test:claims -- --grep @claim:price-and-deliverable",
+    "sandbox": "fresh browser context; assert price, checkout target, deliverable, and legal price"
+  }
+]

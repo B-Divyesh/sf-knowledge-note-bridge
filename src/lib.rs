@@ -582,11 +582,17 @@ Sequence numbers and readiness.
 
     #[test]
     fn renders_commonmark_for_anki_fields() {
-        let cards = parse_markdown(
-            &EXAMPLE.replace("Sequence numbers", "**Sequence numbers**"),
-            "notes.md",
-        )
-        .unwrap();
-        assert!(cards[0].back.contains("<strong>Sequence numbers</strong>"));
+        let markdown = EXAMPLE.replace(
+            "Sequence numbers and readiness.",
+            "**Sequence numbers** and [state](https://example.com).\n\n- one\n- two\n\n| A | B |\n| - | - |\n| x | y |\n\n~~old~~ and `code`",
+        );
+        let cards = parse_markdown(&markdown, "notes.md").unwrap();
+        let back = &cards[0].back;
+        assert!(back.contains("<strong>Sequence numbers</strong>"));
+        assert!(back.contains("<a href=\"https://example.com\">state</a>"));
+        assert!(back.contains("<ul>"));
+        assert!(back.contains("<table>"));
+        assert!(back.contains("<del>old</del>"));
+        assert!(back.contains("<code>code</code>"));
     }
 }

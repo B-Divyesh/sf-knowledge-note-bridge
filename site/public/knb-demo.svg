@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="480" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">Knowledge Note Bridge demo terminal output</title>
+  <desc id="desc">The knb demo command reports one add, update, rename, and archive without contacting Anki.</desc>
+  <rect width="960" height="480" rx="24" fill="#172b2f"/>
+  <path d="M0 58h960" stroke="#36565c"/>
+  <circle cx="34" cy="29" r="7" fill="#9b3d35"/><circle cx="58" cy="29" r="7" fill="#b9852f"/><circle cx="82" cy="29" r="7" fill="#3f846c"/>
+  <g fill="#eff7f6" font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="18">
+    <text x="34" y="94" fill="#8bb7bd">$</text><text x="58" y="94">knb demo</text>
+    <text x="34" y="132">Demo — sample data; Anki was not contacted.</text>
+    <text x="34" y="180" fill="#b7c9c7">0 unchanged · 1 add · 1 update · 1 rename · 1 archive · 0 blocked</text>
+    <text x="34" y="224" fill="#d9b46f">→  rename</text><text x="164" y="224">lead-qualification</text><text x="446" y="224" fill="#b7c9c7">same Anki note 17052</text>
+    <text x="34" y="264" fill="#e09388">−  archive</text><text x="164" y="264">obsolete-cache-rule</text><text x="446" y="264" fill="#b7c9c7">suspend; never delete</text>
+    <text x="34" y="304" fill="#8bb7bd">+  add</text><text x="164" y="304">recovery-time-objective</text><text x="446" y="304" fill="#b7c9c7">create in Work</text>
+    <text x="34" y="344" fill="#8bb7bd">~  update</text><text x="164" y="344">tcp-handshake</text><text x="446" y="344" fill="#b7c9c7">edit note 17041 in place</text>
+    <text x="34" y="392" fill="#93cdb8">No changes were written.</text>
+    <text x="34" y="432" fill="#b7c9c7">Plan saved in /tmp/knowledge-note-bridge-demo-…</text>
+  </g>
+</svg>

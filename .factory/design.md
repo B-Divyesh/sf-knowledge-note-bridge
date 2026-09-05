@@ -82,3 +82,12 @@ to the right. Palette of porcelain white, pale blue-grey, deep fjord slate, rest
 cobalt. Photoreal tactile materials with a slightly surreal architectural scale. No
 words, letters, logos, screens, devices, people, gradients, or watermark.”
 
+## Repair 2 derivatives
+
+- `site/public/social-card.webp` is a 1200 × 630 center crop of the original
+  ceramic artwork. It was produced locally with ImageMagick; no new source material
+  or external license was added.
+- `site/public/apple-touch-icon.png` is a hand-drawn raster version of the cobalt
+  maker's mark. It was composed locally with ImageMagick from the documented palette.
+- `site/public/knb-demo.svg` is a hand-made terminal recording based on the real
+  output of `knb demo`. The adjacent HTML transcript carries the same information.

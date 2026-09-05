@@ -15,7 +15,7 @@ async function assetPaths(directory, relative = '') {
 }
 
 const hashedAssets = (await assetPaths(assets)).sort().map((file) => `/assets/${file}`);
-const shell = ['/', '/privacy/', '/terms/', '/bridge-ceramic.webp', '/favicon.svg', ...hashedAssets];
+const shell = ['/', '/demo/', '/privacy/', '/terms/', '/404.html', '/bridge-ceramic.webp', '/knb-demo.svg', '/social-card.webp', '/favicon.svg', '/apple-touch-icon.png', ...hashedAssets];
 const cacheVersion = createHash('sha256').update(JSON.stringify(shell)).digest('hex').slice(0, 12);
 const template = await readFile('site/public/sw.js', 'utf8');
 const worker = template

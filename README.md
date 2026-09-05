@@ -1,28 +1,46 @@
 # Knowledge Note Bridge
 
-Keep Anki review history attached to the knowledge in your Markdown notes. Knowledge
-Note Bridge (`knb`) gives every card a stable source ID, previews a dry-run diff, backs
-up Anki before writing, and records how each change can be reversed.
+Update Anki cards from Markdown without losing review history.
 
-It is for self-learners who want Markdown to remain the source of truth without turning
-every edit or file rename into a new Anki card. Notes stay local. There is no telemetry.
+Knowledge Note Bridge is for self-learners who keep technical or business notes in
+Markdown. It compares stable source IDs with existing Anki notes before anything
+changes.
 
-## Install
+## Try the sample
 
-Build the single binary with stable Rust:
+Install the CLI, then run its isolated sample:
 
 ```sh
 cargo install --path .
+knb demo
+```
+
+The command uses the files in `examples/`. It creates a new temporary directory,
+writes a dry-run plan there, and never contacts Anki.
+
+The browser sample is at
+[knowledge-note-bridge.sociobot.in/demo/](https://knowledge-note-bridge.sociobot.in/demo/).
+It uses a separate `demo:knb:` session storage namespace. Reset or exit clears that
+namespace.
+
+## Install
+
+Requirements:
+
+- Stable Rust
+- Anki with AnkiConnect installed, add-on code `2055492159`
+
+```sh
+cargo install --git https://github.com/B-Divyesh/sf-knowledge-note-bridge
 knb --help
 ```
 
-Anki must be open with the free AnkiConnect add-on installed (code `2055492159`) when
-you run `plan` or `sync`. The default endpoint is `http://127.0.0.1:8765`.
+Anki must be open for `plan` and `sync`. The default AnkiConnect address is
+`http://127.0.0.1:8765`. Use `--endpoint URL` to choose another address.
 
 ## Markdown format
 
-Cards use a compact fenced block. `id` is permanent; changing a question, answer,
-deck, tags, or filename does not change the Anki note identity.
+Each card uses a fenced block:
 
 ````markdown
 # Transport protocols
@@ -38,97 +56,96 @@ Both peers' initial sequence numbers and readiness to exchange data.
 ```
 ````
 
-IDs must be unique across all input paths and contain lowercase letters, digits,
-`.` `_` or `-`. A card may be intentionally retired with `archived: true`. Rename an
-incorrect old ID without losing history by adding `renamed-from: old-id` to the new
-card. Missing cards are never silently deleted: `plan` reports them as `needs-action`
-until the source explicitly archives or renames them.
+IDs use lowercase letters, numbers, `.`, `_`, or `-`. They must be unique across
+the supplied files.
 
-Question and answer bodies support CommonMark, including links, lists, code, emphasis,
-tables, strikethrough, and task lists; the CLI renders them to Anki-safe field HTML.
+Use `archived: true` to retire a card. Use `renamed-from: old-id` to correct an ID
+while keeping the existing Anki note.
 
-## Usage
+Card fields support links, lists, code, emphasis, tables, and strikethrough.
 
-First save the dry-run that you inspect. It is the approval artifact for a write:
+## Review and sync
+
+First validate the source:
+
+```sh
+knb check notes/
+```
+
+Save the exact dry-run you review:
 
 ```sh
 knb plan notes/ --json > plan.json
 ```
 
-Example summary:
-
-```text
-2 unchanged · 1 update · 1 rename · 1 archive · 0 blocked
-No changes were written. Save this exact JSON plan before attempting a sync.
-```
-
-Then apply the exact same reconciliation. `sync` refuses to write if source cards or
-Anki state have changed since that plan; it prints the new plan and exits before backup
-or mutation. A matching sync exports every Anki deck to a scheduled `.apkg` backup
-through AnkiConnect before the first write and stores a local reversal report:
+Apply that plan:
 
 ```sh
 knb sync notes/ --yes --plan plan.json
-# report: .knb/reports/20260828T154012Z.json
 ```
 
-Other useful commands:
+A writing sync requires the exact current plan. Missing cards and stale plans stop
+before backup or writes.
 
-```sh
-knb check notes/                 # parse and validate without Anki
-knb init notes/cards.md          # create a documented starter note
-knb plan notes/ --endpoint URL   # use a non-default AnkiConnect endpoint
-knb sync notes/ --yes --plan plan.json --json # non-interactive scripting output
-```
+A matching sync exports scheduled Anki backups before the first write. It then stores
+a recovery report in `.knb/reports/`.
 
-The CLI never prompts. A sync with changes requires both `--yes` and `--plan FILE`; the
-file must be unmodified JSON from a current `knb plan --json`. Missing or stale approval
-prints the current plan and exits with code 3 before a backup or write. Parse/configuration
-errors use exit code 2, blocked safety conditions 3, and Anki/network failures 4. `--json`
-writes one JSON value to stdout; human diagnostics go to stderr.
+Updates change fields on the existing Anki note. Explicit archives add a tag and
+suspend cards instead of deleting them.
 
-## How identity and history are preserved
+If a write fails, the failed report keeps its backup paths. Restore an `.apkg` file
+through Anki when recovery is needed.
 
-Each Anki note receives `knb_id::<id>` and `knb_managed` tags. On later runs, the bridge
-looks up that tag and updates the existing note in place, retaining its note ID, cards,
-scheduling, lapses, ease, and review log. A rename replaces only the identity tag on the
-same note. An archive suspends the existing cards and adds `knb_archived`; it does not
-delete them. The report records old fields/tags and card suspension state for recovery.
+Use `--json` for one machine-readable value. Success and error output both follow
+that rule.
 
-If Anki contains two notes with the same `knb_id` or a source ID collides, the operation
-is blocked before backup or mutation. If any write fails, the report is retained with
-the backup path and the failure; restore the backup from Anki's import screen.
+## Privacy
 
-## Free and Steward
+The CLI reads local files and calls only the AnkiConnect address you choose. It sends
+no analytics.
 
-The CLI and all integrity safeguards are MIT-licensed and fully usable for free.
-Knowledge Note Bridge Steward is a one-time purchase that unlocks convenience on the
-documentation site: saving browser demo reports for later reference. It does
-not gate sync safety, accessibility, or data export. The hosted checkout and license
-verification are handled by Sociobot; no payment details enter this repository.
+The browser demo never places pasted Markdown in a request. Normal home and demo use
+makes no analytics or third-party runtime request.
 
-## Development
+The sample works offline after one visit.
 
-Requirements: stable Rust, Node.js 20+, npm, and Chromium for browser tests.
+## Free CLI and Steward
+
+Every CLI command, backup, report, JSON output, and safety check works without a
+license.
+
+Steward costs $19 once. It saves the bundled browser sample report on the device.
+Checkout and license checks use the Sociobot billing API.
+
+A valid license result is cached for one day. Steward access ends when Sociobot
+reports that the license is invalid.
+
+See the public [Privacy](https://knowledge-note-bridge.sociobot.in/privacy/) and
+[Terms](https://knowledge-note-bridge.sociobot.in/terms/) pages.
+
+## Develop and verify
+
+Requirements are stable Rust, Node.js 20 or later, npm, and Chromium.
 
 ```sh
 npm ci
-npm test                 # Rust tests + site tests
-npm run build            # release binary + site -> dist/
-npm run build:site       # static site only -> dist/site/
+npm test
+npm run build
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
 cargo package --allow-dirty
+./verify-url.sh
 ```
 
-The package starts at `0.1.0`. CI can use `knb sync --yes --plan plan.json`; there are no
-interactive prompts. The static site is deployed from `dist/site` and documents the downloadable
-binary supplied by the factory release pipeline.
+`npm test` runs Rust tests, browser parser tests, a production site build, desktop
+checks, 390-pixel phone checks, and every declared claim.
 
-## Privacy and security
+`npm run build` produces the release binary and `dist/site/`. The factory deploys
+`dist/site/`; do not publish the crate from a worker.
 
-Markdown, manifests, backups, and reports stay on your machine. AnkiConnect is called
-only at the configured endpoint. The site has no analytics or third-party runtime
-scripts. Optional license verification sends only the entered license token to the
-Sociobot API. See `/privacy/` and `/terms/` on the site.
+Every public product claim and its isolated command is listed in
+[.factory/claims.json](.factory/claims.json). Demo boundaries are documented in
+[.factory/demo.md](.factory/demo.md).
 
 ## License
 

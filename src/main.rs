@@ -1,7 +1,7 @@
 use clap::{Args, Parser, Subcommand};
 use knowledge_note_bridge::{
-    build_plan, parse_paths, Change, ExistingNote, Plan, SourceCard, ARCHIVED_TAG, ID_PREFIX,
-    MANAGED_TAG,
+    build_plan, parse_markdown, parse_paths, Change, ExistingNote, Plan, SourceCard, ARCHIVED_TAG,
+    ID_PREFIX, MANAGED_TAG,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -35,6 +35,8 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Command {
+    /// Run a safe sample in a new temporary directory; never contacts Anki
+    Demo,
     /// Create a starter Markdown note without overwriting an existing file
     Init {
         #[arg(value_name = "FILE")]
@@ -145,6 +147,7 @@ fn main() -> ExitCode {
 
 fn run(cli: &Cli) -> Result<(), AppError> {
     match &cli.command {
+        Command::Demo => demo(cli.json),
         Command::Init { file } => init(file, cli.json),
         Command::Check(paths) => check(&paths.paths, cli.json),
         Command::Plan(paths) => {
@@ -165,6 +168,64 @@ fn run(cli: &Cli) -> Result<(), AppError> {
             sync(&paths.paths, *yes, plan.as_deref(), cli.json, &cli.endpoint)
         }
     }
+}
+
+fn demo(as_json: bool) -> Result<(), AppError> {
+    let stamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    let directory = std::env::temp_dir().join(format!(
+        "knowledge-note-bridge-demo-{}-{stamp}",
+        std::process::id()
+    ));
+    fs::create_dir(&directory).map_err(|error| {
+        AppError::usage(format!(
+            "could not create demo directory {}: {error}",
+            directory.display()
+        ))
+    })?;
+
+    let source_path = directory.join("sample-notes.md");
+    let existing_path = directory.join("sample-anki.json");
+    let plan_path = directory.join("demo-plan.json");
+    let source = include_str!("../examples/sample-notes.md");
+    let existing_json = include_str!("../examples/demo-anki.json");
+    fs::write(&source_path, source)
+        .and_then(|_| fs::write(&existing_path, existing_json))
+        .map_err(|error| AppError::usage(format!("could not write demo files: {error}")))?;
+    let cards = parse_markdown(source, &source_path.to_string_lossy())
+        .map_err(|errors| AppError::usage(errors.join("\n")))?;
+    let existing: Vec<ExistingNote> = serde_json::from_str(existing_json)
+        .map_err(|error| AppError::usage(format!("bundled demo data is invalid: {error}")))?;
+    let plan = build_plan(&cards, &existing);
+    fs::write(&plan_path, serde_json::to_vec_pretty(&plan).unwrap())
+        .map_err(|error| AppError::usage(format!("could not write demo plan: {error}")))?;
+
+    if as_json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&json!({
+                "schema": 1,
+                "demo": true,
+                "sample_data": true,
+                "anki_contacted": false,
+                "output_dir": directory,
+                "source": source_path,
+                "plan_file": plan_path,
+                "plan": plan
+            }))
+            .unwrap()
+        );
+    } else {
+        println!("Demo — sample data; Anki was not contacted.\n");
+        print_plan(&plan, false);
+        println!(
+            "\nSample files and the dry-run plan are in {}\nDelete that temporary directory when you are done.",
+            directory.display()
+        );
+    }
+    Ok(())
 }
 
 fn init(file: &Path, as_json: bool) -> Result<(), AppError> {

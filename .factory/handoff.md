@@ -1,11 +1,47 @@
-# Knowledge Note Bridge — verification handoff
+# Knowledge Note Bridge — review handoff
 
-## Release status: PASS
+## Release status: FAIL
 
-Independent QA passed on 2026-08-28 for candidate
-`1652df0c0d1b1472ade1c4d83049d455554dac83` and the live deployment at
-https://knowledge-note-bridge.sociobot.in/. No P0–P3 defects were found in the
-tested scope. The detailed evidence is in `.factory/verification-2.md`.
+Review 1 on 2026-09-05 found 6 findings and 18 untested public claims for
+implementation candidate `1652df0c0d1b1472ade1c4d83049d455554dac83`. The
+documentation/review head is `c2e556e8819d80513c368476c8ddc17cad3eb62f`.
+The detailed evidence and repair list are in `.factory/review-1.md`.
+
+Do not treat the earlier PASS in `.factory/verification-2.md` as current
+acceptance: this audit applies the current claims, demo-sandbox, plain-words,
+and site-structure contracts and therefore returns an unambiguous FAIL.
+
+## What this review did
+
+- Ran the documented clean candidate commands: `npm ci`, `npm test`, `npm run
+  build`, `cargo fmt --check`, `cargo clippy --all-targets -- -D warnings`, and
+  `cargo package --allow-dirty`.
+- Installed and exercised the CLI in a clean consumer directory.
+- Opened the live site in fresh desktop and 390 px phone browser contexts;
+  checked normal, invalid, recovery, keyboard, reduced-motion, Axe, privacy,
+  offline, legal, `/demo`, and unknown-path behavior.
+
+## Work left before release
+
+1. Add and test `.factory/claims.json` for every public claim.
+2. Implement the contract-compliant isolated sample demo and CLI `knb demo`.
+3. Repair plain-language first-screen copy, `/demo` title/route, metadata, and
+   a designed HTTP 404.
+4. Add `verify-url.sh` or document an equivalent declared verification command.
+
+## How to repeat
+
+```sh
+npm ci
+npm test
+npm run build
+cargo fmt --check
+cargo clippy --all-targets -- -D warnings
+cargo package --allow-dirty
+```
+
+The static deployment root is `dist/site`. The factory owns deployment and
+registry publication; do not publish from this repository worker.
 
 ## What was verified
 

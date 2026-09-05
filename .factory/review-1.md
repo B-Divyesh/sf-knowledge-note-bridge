@@ -107,6 +107,9 @@ alt checks were performed directly instead.
 
 ## Evidence that passed
 
+- The live `index.html`, hashed JavaScript and CSS, `sw.js`, and hero WebP
+  SHA-256 values exactly match the clean build of implementation candidate
+  `1652df0`; the later `b79da3c` and `c2e556e` commits are documentation-only.
 - Used fresh Chromium contexts at desktop 1440 × 900 and phone 390 × 844 before
   scrolling. Both returned 200 with the expected home title, one h1, a main
   landmark, a hero alt, and no horizontal overflow on phone.

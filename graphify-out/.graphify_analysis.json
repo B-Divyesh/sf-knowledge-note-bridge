@@ -275,17 +275,6 @@
   ],
   "surprises": [
     {
-      "source": "load()",
-      "target": "parse_paths()",
-      "source_files": [
-        "src/main.rs",
-        "src/lib.rs"
-      ],
-      "confidence": "INFERRED",
-      "relation": "calls",
-      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
-    },
-    {
       "source": "run()",
       "target": "build_plan()",
       "source_files": [
@@ -299,6 +288,17 @@
     {
       "source": "sync()",
       "target": "build_plan()",
+      "source_files": [
+        "src/main.rs",
+        "src/lib.rs"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "load()",
+      "target": "parse_paths()",
       "source_files": [
         "src/main.rs",
         "src/lib.rs"

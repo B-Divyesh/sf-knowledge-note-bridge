@@ -1,5 +1,24 @@
 # Knowledge Note Bridge — repair 2 handoff
 
+## Latest independent verification
+
+**Verification 3 verdict: FAIL.** The implementation candidate
+`db31f6cb25612439a356408be751c2d77a4bfa23` remains live and its runtime, CLI,
+demo, accessibility, offline, package, and deployment-identity checks passed.
+The documentation baseline reviewed was
+`f11c1e1a76aa35254781a112eb82dcea3b90bc40`.
+
+The failure is claims-contract coverage only; no product code was changed by the
+verifier. See `.factory/verification-3.md` for the three findings:
+
+1. The public CLI no-analytics/only-chosen-AnkiConnect privacy promise has no
+   matching CLI request-recording claim test.
+2. The paid report-saving claim test checks copy but does not save and assert a
+   report under a recorded valid license.
+3. “Receive future Steward browser features” is an untestable public promise.
+
+The next repair should address those claims and repeat independent verification.
+
 ## Release status
 
 Repair complete and deployed on 2026-09-06.

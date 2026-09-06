@@ -115,10 +115,10 @@ Every CLI command, backup, report, JSON output, and safety check works without a
 license.
 
 Steward costs $19 once. It saves the bundled browser sample report on the device.
-Checkout and license checks use the Sociobot billing API.
+Billing registration is pending, so new purchases and license checks are unavailable.
 
-A valid license result is cached for one day. Steward access ends when Sociobot
-reports that the license is invalid.
+After registration, checkout and license checks use the Sociobot billing API. A valid
+license result is cached for one day.
 
 See the public [Privacy](https://knowledge-note-bridge.sociobot.in/privacy/) and
 [Terms](https://knowledge-note-bridge.sociobot.in/terms/) pages.

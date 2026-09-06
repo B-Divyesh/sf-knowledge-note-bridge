@@ -112,6 +112,9 @@ nav a[aria-current="page"] { color: var(--slate); text-decoration: underline; te
 .features li { position: relative; padding: 8px 0 8px 30px; }
 .features li::before { content: "✓"; position: absolute; left: 0; color: var(--moss); font-weight: 800; }
 .license-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.unavailable { border-color: #7f9290; color: var(--fjord); background: #e1e8e6; cursor: not-allowed; }
+.unavailable:hover { color: var(--fjord); background: #e1e8e6; }
+.checkout-status { color: var(--oxide); font-weight: 700; }
 .license-box { padding: 24px; border-radius: 20px 20px 24px 22px; background: #edf3f1; }
 .license-box label { display: block; margin-bottom: 8px; font-weight: 750; }
 .license-box input { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid #6f8987; border-radius: 10px; color: var(--slate); background: var(--porcelain); }

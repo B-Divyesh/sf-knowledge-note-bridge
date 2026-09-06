@@ -52,7 +52,9 @@ The job, audience, action, action result, and three facts fit in the initial
 | 7 | The backup and report support recovery. |
 | 12 | Every CLI command, backup, report, JSON output, and safety check remains free. |
 | 8 | Steward saves browser demo reports on this device. |
-| 5 | Sociobot/Dodo handles payment and refunds. |
+| 4 | Billing registration is pending. |
+| 7 | New purchases and license checks are unavailable. |
+| 10 | When checkout is registered, Sociobot/Dodo will handle payment and refunds. |
 | 8 | A revoked license loses Steward access after verification. |
 | 4 | See Privacy and Terms. |
 | 6 | Paste the token from your receipt. |

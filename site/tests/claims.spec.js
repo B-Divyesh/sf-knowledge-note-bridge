@@ -358,7 +358,8 @@ test('@claim:price-and-deliverable shows the exact one-time price and paid featu
   await expect(page.locator('.price')).toContainText('$19');
   await expect(page.locator('.price')).toContainText('one-time purchase');
   await expect(page.getByText('Save the current browser sample report')).toBeVisible();
-  await expect(page.getByRole('link', { name: /Buy Steward once/ })).toHaveAttribute('href', 'https://api.sociobot.in/api/v1/products/knowledge-note-bridge/checkout');
+  await expect(page.getByText('Checkout unavailable')).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.getByText('Billing registration is pending. New purchases and license checks are unavailable.')).toBeVisible();
   await page.goto('/terms/');
   await expect(page.getByText('Steward costs $19 once.')).toBeVisible();
 });
